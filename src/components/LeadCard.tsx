@@ -9,7 +9,10 @@ interface Props {
 
   updateStatus: (
     id: number,
-    status: string
+    status:
+      | "New"
+      | "Interested"
+      | "Closed"
   ) => void;
 
   updateNotes: (
