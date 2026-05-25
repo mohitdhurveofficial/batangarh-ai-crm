@@ -1,70 +1,38 @@
-const API_KEY =
-  import.meta.env.VITE_GEMINI_API_KEY;
-
 export async function generateAIPitch(
   businessName: string,
   category: string,
   city: string,
   state: string
 ) {
-  try {
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
-        API_KEY,
-      {
-        method: "POST",
+  const templates = [
+    `Hi ${businessName} 👋
 
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
+We help ${category.toLowerCase()} businesses in ${city} grow through social media marketing, branding and local promotions with Batangarh News.
 
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `
-Write a short professional WhatsApp outreach message.
+Would love to discuss how we can help increase your customer reach.`,
 
-Business Name: ${businessName}
-Category: ${category}
-Location: ${city}, ${state}
+    `Hello ${businessName},
 
-Promote:
-- Batangarh News
-- digital marketing
-- branding
-- social media growth
+Batangarh News helps local businesses across ${state} with:
+• digital marketing
+• branding
+• social media growth
+• local audience reach
 
-Keep message short, human and conversational.
-`,
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
+Interested in a quick discussion for your business growth?`,
 
-    const data =
-      await response.json();
+    `Hi there 👋
 
-    console.log(data);
+We noticed your ${category.toLowerCase()} business in ${city} and believe it has strong online growth potential.
 
-    if (data.error) {
-      return `Error: ${data.error.message}`;
-    }
+Batangarh News can help with promotions, branding and social media growth.
 
-    return (
-      data?.candidates?.[0]
-        ?.content?.parts?.[0]
-        ?.text ||
-      "No AI response received."
-    );
-  } catch (error) {
-    console.error(error);
+Would you like to connect once?`,
+  ];
 
-    return "AI request failed.";
-  }
+  const randomIndex = Math.floor(
+    Math.random() * templates.length
+  );
+
+  return templates[randomIndex];
 }
