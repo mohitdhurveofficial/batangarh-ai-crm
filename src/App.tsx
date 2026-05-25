@@ -1,4 +1,7 @@
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import LeadCard from "./components/LeadCard";
 
@@ -38,59 +41,70 @@ export interface Lead {
 
 function App() {
   const [leads, setLeads] =
-    useState<Lead[]>([
-      {
-        id: 1,
+    useState<Lead[]>(() => {
+      const savedLeads =
+        localStorage.getItem(
+          "batangarh-leads"
+        );
 
-        businessName:
-          "Royal Traders",
+      return savedLeads
+        ? JSON.parse(savedLeads)
+        : [
+            {
+              id: 1,
 
-        category: "Fashion",
+              businessName:
+                "Royal Traders",
 
-        city: "Ahmedabad",
+              category: "Fashion",
 
-        state: "Gujarat",
+              city: "Ahmedabad",
 
-        phone: "9876543210",
+              state: "Gujarat",
 
-        email:
-          "royaltraders@gmail.com",
+              phone: "9876543210",
 
-        status: "New",
+              email:
+                "royaltraders@gmail.com",
 
-        notes: "",
+              status: "New",
 
-        aiScore: 91,
+              notes: "",
 
-        temperature: "Hot",
-      },
+              aiScore: 91,
 
-      {
-        id: 2,
+              temperature: "Hot",
+            },
 
-        businessName:
-          "Modern Mart",
+            {
+              id: 2,
 
-        category: "Automobile",
+              businessName:
+                "Modern Mart",
 
-        city: "Delhi",
+              category:
+                "Automobile",
 
-        state: "Delhi",
+              city: "Delhi",
 
-        phone: "9876543211",
+              state: "Delhi",
 
-        email:
-          "modernmart@gmail.com",
+              phone: "9876543211",
 
-        status: "Interested",
+              email:
+                "modernmart@gmail.com",
 
-        notes: "",
+              status:
+                "Interested",
 
-        aiScore: 77,
+              notes: "",
 
-        temperature: "Warm",
-      },
-    ]);
+              aiScore: 77,
+
+              temperature: "Warm",
+            },
+          ];
+    });
 
   const [newBusiness, setNewBusiness] =
     useState("");
@@ -103,6 +117,13 @@ function App() {
 
   const [newState, setNewState] =
     useState("");
+
+  useEffect(() => {
+    localStorage.setItem(
+      "batangarh-leads",
+      JSON.stringify(leads)
+    );
+  }, [leads]);
 
   function updateStatus(
     id: number,
