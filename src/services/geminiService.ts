@@ -1,5 +1,5 @@
 const API_KEY =
-  "AIzaSyAnpGnk8V6MDeara3TSJ7Vzwhss3Xpv7Xw";
+  import.meta.env.VITE_GEMINI_API_KEY;
 
 export async function generateAIPitch(
   businessName: string,
@@ -23,8 +23,8 @@ Promote:
 
 Keep message:
 - short
-- human
 - conversational
+- human
 - high converting
 `;
 
@@ -56,14 +56,20 @@ Keep message:
     const data =
       await response.json();
 
-    console.log(data);
-
-    return (
-      data?.candidates?.[0]
-        ?.content?.parts?.[0]
-        ?.text ||
-      "Unable to generate AI pitch."
+    console.log(
+      "Gemini Response:",
+      data
     );
+
+    if (
+      data.candidates &&
+      data.candidates.length > 0
+    ) {
+      return data.candidates[0]
+        .content.parts[0].text;
+    }
+
+    return "Unable to generate AI pitch.";
   } catch (error) {
     console.error(error);
 
