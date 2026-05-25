@@ -1,4 +1,4 @@
-import { Lead } from "../services/leadService";
+import type { Lead } from "../services/leadService";
 
 export function generatePitch(
   lead: Lead
