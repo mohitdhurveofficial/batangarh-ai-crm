@@ -1,369 +1,254 @@
-import { useEffect, useMemo, useState } from "react";
-import "./App.css";
+import { useState } from "react";
 
-import Navbar from "./components/Navbar";
 import LeadCard from "./components/LeadCard";
-import StatsCard from "./components/StatsCard";
-import AnalyticsChart from "./charts/AnalyticsChart";
 
-import {
-  states,
-  businessCategories,
-} from "./data";
+import "./index.css";
 
-import {
-  generateLeads,
-} from "./services/leadService";
+export type LeadStatus =
+  | "New"
+  | "Interested"
+  | "Closed";
 
-import type { Lead } from "./services/leadService";
+export interface Lead {
+  id: number;
 
-export default function App() {
-  const [activeTab, setActiveTab] =
-    useState("Dashboard");
+  businessName: string;
 
-  const [search, setSearch] =
-    useState("");
+  category: string;
 
-  const [selectedState, setSelectedState] =
-    useState("All");
+  city: string;
 
-  const [
-    selectedCategory,
-    setSelectedCategory,
-  ] = useState("All");
+  state: string;
 
+  phone: string;
+
+  email: string;
+
+  status: LeadStatus;
+
+  notes: string;
+
+  aiScore: number;
+
+  temperature:
+    | "Hot"
+    | "Warm"
+    | "Cold";
+}
+
+function App() {
   const [leads, setLeads] =
-    useState<Lead[]>([]);
+    useState<Lead[]>([
+      {
+        id: 1,
 
-  useEffect(() => {
-    const saved =
-      localStorage.getItem(
-        "batangarh-leads"
-      );
+        businessName:
+          "Royal Traders",
 
-    if (saved) {
-      setLeads(JSON.parse(saved));
-    } else {
-      setLeads(generateLeads());
-    }
-  }, []);
+        category: "Fashion",
 
-  useEffect(() => {
-    localStorage.setItem(
-      "batangarh-leads",
-      JSON.stringify(leads)
-    );
-  }, [leads]);
+        city: "Ahmedabad",
 
-  const filteredLeads =
-    useMemo(() => {
-      return leads.filter((lead) => {
-        const matchesSearch =
-          lead.businessName
-            .toLowerCase()
-            .includes(
-              search.toLowerCase()
-            );
+        state: "Gujarat",
 
-        const matchesState =
-          selectedState === "All" ||
-          lead.state ===
-            selectedState;
+        phone: "9876543210",
 
-        const matchesCategory =
-          selectedCategory ===
-            "All" ||
-          lead.category ===
-            selectedCategory;
+        email:
+          "royaltraders@gmail.com",
 
-        return (
-          matchesSearch &&
-          matchesState &&
-          matchesCategory
-        );
-      });
-    }, [
-      leads,
-      search,
-      selectedState,
-      selectedCategory,
+        status: "New",
+
+        notes: "",
+
+        aiScore: 91,
+
+        temperature: "Hot",
+      },
+
+      {
+        id: 2,
+
+        businessName:
+          "Modern Mart",
+
+        category: "Automobile",
+
+        city: "Delhi",
+
+        state: "Delhi",
+
+        phone: "9876543211",
+
+        email:
+          "modernmart@gmail.com",
+
+        status: "Interested",
+
+        notes: "",
+
+        aiScore: 77,
+
+        temperature: "Warm",
+      },
     ]);
 
-  const updateStatus = (
+  const [newBusiness, setNewBusiness] =
+    useState("");
+
+  const [newCategory, setNewCategory] =
+    useState("");
+
+  const [newCity, setNewCity] =
+    useState("");
+
+  const [newState, setNewState] =
+    useState("");
+
+  function updateStatus(
     id: number,
-    status:
-      | "New"
-      | "Interested"
-      | "Closed"
-  ) => {
+    status: LeadStatus
+  ) {
     setLeads((prev) =>
       prev.map((lead) =>
         lead.id === id
-          ? { ...lead, status }
+          ? {
+              ...lead,
+              status,
+            }
           : lead
       )
     );
-  };
+  }
 
-  const updateNotes = (
+  function updateNotes(
     id: number,
     notes: string
-  ) => {
+  ) {
     setLeads((prev) =>
       prev.map((lead) =>
         lead.id === id
-          ? { ...lead, notes }
+          ? {
+              ...lead,
+              notes,
+            }
           : lead
       )
     );
-  };
+  }
 
-  const exportCSV = () => {
-    const rows = [
-      [
-        "Business",
-        "Category",
-        "City",
-        "State",
-        "Phone",
-        "Email",
-        "AI Score",
-        "Status",
-      ],
+  function addLead() {
+    if (!newBusiness) return;
 
-      ...leads.map((lead) => [
-        lead.businessName,
-        lead.category,
-        lead.city,
-        lead.state,
-        lead.phone,
-        lead.email,
-        lead.aiScore,
-        lead.status,
-      ]),
-    ];
+    const newLead: Lead = {
+      id: Date.now(),
 
-    const csvContent = rows
-      .map((row) => row.join(","))
-      .join("\n");
+      businessName:
+        newBusiness,
 
-    const blob = new Blob(
-      [csvContent],
-      {
-        type: "text/csv;charset=utf-8;",
-      }
-    );
+      category:
+        newCategory,
 
-    const url =
-      URL.createObjectURL(blob);
+      city: newCity,
 
-    const link =
-      document.createElement("a");
+      state: newState,
 
-    link.href = url;
+      phone: "9999999999",
 
-    link.download =
-      "batangarh-leads.csv";
+      email:
+        "business@email.com",
 
-    link.click();
-  };
+      status: "New",
 
-  const stats = {
-    total: leads.length,
+      notes: "",
 
-    interested: leads.filter(
-      (lead) =>
-        lead.status ===
-        "Interested"
-    ).length,
+      aiScore: Math.floor(
+        Math.random() * 100
+      ),
 
-    closed: leads.filter(
-      (lead) =>
-        lead.status === "Closed"
-    ).length,
+      temperature: "Warm",
+    };
 
-    hot: leads.filter(
-      (lead) =>
-        lead.temperature === "Hot"
-    ).length,
+    setLeads([
+      newLead,
+      ...leads,
+    ]);
 
-    average:
-      leads.length > 0
-        ? Math.floor(
-            leads.reduce(
-              (acc, lead) =>
-                acc +
-                lead.aiScore,
-              0
-            ) / leads.length
-          )
-        : 0,
-  };
+    setNewBusiness("");
+    setNewCategory("");
+    setNewCity("");
+    setNewState("");
+  }
 
   return (
     <div className="app">
-      <div className="container">
-        <h1 className="title">
-          Batangarh News AI CRM
-        </h1>
+      <h1>
+        Batangarh AI CRM
+      </h1>
 
-        <p className="subtitle">
-          Mohit Durve •
-          mohit.durve@batangarh.com
-          • 9424666064
-        </p>
-
-        <Navbar
-          activeTab={activeTab}
-          setActiveTab={
-            setActiveTab
+      <div className="add-lead">
+        <input
+          placeholder="Business Name"
+          value={newBusiness}
+          onChange={(e) =>
+            setNewBusiness(
+              e.target.value
+            )
           }
         />
 
-        <div className="toolbar">
-          <input
-            placeholder="Search business..."
-            value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
+        <input
+          placeholder="Category"
+          value={newCategory}
+          onChange={(e) =>
+            setNewCategory(
+              e.target.value
+            )
+          }
+        />
+
+        <input
+          placeholder="City"
+          value={newCity}
+          onChange={(e) =>
+            setNewCity(
+              e.target.value
+            )
+          }
+        />
+
+        <input
+          placeholder="State"
+          value={newState}
+          onChange={(e) =>
+            setNewState(
+              e.target.value
+            )
+          }
+        />
+
+        <button
+          onClick={addLead}
+        >
+          Add Lead
+        </button>
+      </div>
+
+      <div className="lead-grid">
+        {leads.map((lead) => (
+          <LeadCard
+            key={lead.id}
+            lead={lead}
+            updateStatus={
+              updateStatus
+            }
+            updateNotes={
+              updateNotes
             }
           />
-
-          <select
-            value={selectedState}
-            onChange={(e) =>
-              setSelectedState(
-                e.target.value
-              )
-            }
-          >
-            <option>
-              All States
-            </option>
-
-            {states.map(
-              (state) => (
-                <option
-                  key={state}
-                >
-                  {state}
-                </option>
-              )
-            )}
-          </select>
-
-          <select
-            value={
-              selectedCategory
-            }
-            onChange={(e) =>
-              setSelectedCategory(
-                e.target.value
-              )
-            }
-          >
-            <option>
-              All Categories
-            </option>
-
-            {businessCategories.map(
-              (category) => (
-                <option
-                  key={category}
-                >
-                  {category}
-                </option>
-              )
-            )}
-          </select>
-
-          <button
-            onClick={exportCSV}
-          >
-            Export CSV
-          </button>
-
-          <button
-            onClick={() =>
-              setLeads(
-                generateLeads()
-              )
-            }
-          >
-            Regenerate AI Leads
-          </button>
-        </div>
-
-        {(activeTab ===
-          "Finder" ||
-          activeTab ===
-            "CRM") && (
-          <div className="lead-grid">
-            {filteredLeads.map(
-              (lead) => (
-                <LeadCard
-                  key={lead.id}
-                  lead={lead}
-                  updateStatus={
-                    updateStatus
-                  }
-                  updateNotes={
-                    updateNotes
-                  }
-                />
-              )
-            )}
-          </div>
-        )}
-
-        {activeTab ===
-          "Dashboard" && (
-          <div className="dashboard-grid">
-            <StatsCard
-              title="Total Leads"
-              value={stats.total}
-            />
-
-            <StatsCard
-              title="Interested Leads"
-              value={
-                stats.interested
-              }
-            />
-
-            <StatsCard
-              title="Closed Deals"
-              value={
-                stats.closed
-              }
-            />
-
-            <StatsCard
-              title="Hot Leads"
-              value={stats.hot}
-            />
-
-            <StatsCard
-              title="Average AI Score"
-              value={`${stats.average}%`}
-            />
-
-            <div className="card">
-              <h2>
-                AI Analytics
-              </h2>
-
-              <AnalyticsChart
-                value={
-                  stats.average
-                }
-              />
-            </div>
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );
 }
+
+export default App;
