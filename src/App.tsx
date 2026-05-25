@@ -49,41 +49,7 @@ function App() {
 
       return savedLeads
         ? JSON.parse(savedLeads)
-        : [
-            {
-              id: 1,
-              businessName:
-                "Royal Traders",
-              category: "Fashion",
-              city: "Ahmedabad",
-              state: "Gujarat",
-              phone: "9876543210",
-              email:
-                "royaltraders@gmail.com",
-              status: "New",
-              notes: "",
-              aiScore: 91,
-              temperature: "Hot",
-            },
-
-            {
-              id: 2,
-              businessName:
-                "Modern Mart",
-              category:
-                "Automobile",
-              city: "Delhi",
-              state: "Delhi",
-              phone: "9876543211",
-              email:
-                "modernmart@gmail.com",
-              status:
-                "Interested",
-              notes: "",
-              aiScore: 77,
-              temperature: "Warm",
-            },
-          ];
+        : [];
     });
 
   const [newBusiness, setNewBusiness] =
@@ -132,6 +98,30 @@ function App() {
       );
     });
 
+  const totalLeads =
+    leads.length;
+
+  const interestedLeads =
+    leads.filter(
+      (lead) =>
+        lead.status ===
+        "Interested"
+    ).length;
+
+  const closedLeads =
+    leads.filter(
+      (lead) =>
+        lead.status ===
+        "Closed"
+    ).length;
+
+  const hotLeads =
+    leads.filter(
+      (lead) =>
+        lead.temperature ===
+        "Hot"
+    ).length;
+
   function updateStatus(
     id: number,
     status: LeadStatus
@@ -167,6 +157,12 @@ function App() {
   function addLead() {
     if (!newBusiness) return;
 
+    const scores = [
+      "Hot",
+      "Warm",
+      "Cold",
+    ] as const;
+
     const newLead: Lead = {
       id: Date.now(),
 
@@ -193,7 +189,13 @@ function App() {
         Math.random() * 100
       ),
 
-      temperature: "Warm",
+      temperature:
+        scores[
+          Math.floor(
+            Math.random() *
+              scores.length
+          )
+        ],
     };
 
     setLeads([
@@ -212,6 +214,30 @@ function App() {
       <h1>
         Batangarh AI CRM
       </h1>
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h3>Total Leads</h3>
+          <p>{totalLeads}</p>
+        </div>
+
+        <div className="stat-card">
+          <h3>Interested</h3>
+          <p>
+            {interestedLeads}
+          </p>
+        </div>
+
+        <div className="stat-card">
+          <h3>Closed Deals</h3>
+          <p>{closedLeads}</p>
+        </div>
+
+        <div className="stat-card">
+          <h3>Hot Leads</h3>
+          <p>{hotLeads}</p>
+        </div>
+      </div>
 
       <div className="add-lead">
         <input
