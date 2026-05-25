@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+
 import "./App.css";
 
 import Navbar from "./components/Navbar";
@@ -15,11 +16,12 @@ import {
   type Lead,
 } from "./services/leadService";
 
-import { generatePitch } from "./utils/generatePitch";
-
 import AnalyticsChart from "./charts/AnalyticsChart";
 
-type LeadStatus = "New" | "Interested" | "Closed";
+type LeadStatus =
+  | "New"
+  | "Interested"
+  | "Closed";
 
 export default function App() {
   const [activeTab, setActiveTab] =
@@ -344,9 +346,6 @@ export default function App() {
                   }
                   updateNotes={
                     updateNotes
-                  }
-                  generatePitch={
-                    generatePitch
                   }
                 />
               )
