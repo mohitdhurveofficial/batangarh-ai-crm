@@ -1,18 +1,20 @@
 import { useState } from "react";
 
-import type { Lead } from "../services/leadService";
+import type { Lead } from "../services/leadService.ts";
 
-import { generateAIPitch } from "../services/geminiService";
+import { generateAIPitch } from "../services/geminiService.ts";
+
+type LeadStatus =
+  | "New"
+  | "Interested"
+  | "Closed";
 
 interface Props {
   lead: Lead;
 
   updateStatus: (
     id: number,
-    status:
-      | "New"
-      | "Interested"
-      | "Closed"
+    status: LeadStatus
   ) => void;
 
   updateNotes: (
@@ -29,34 +31,33 @@ export default function LeadCard({
   const [loading, setLoading] =
     useState(false);
 
-  const handleGeneratePitch =
-    async () => {
-      try {
-        setLoading(true);
+  async function handleGeneratePitch() {
+    try {
+      setLoading(true);
 
-        const pitch =
-          await generateAIPitch(
-            lead.businessName,
-            lead.category,
-            lead.city,
-            lead.state
-          );
-
-        navigator.clipboard.writeText(
-          pitch
+      const pitch =
+        await generateAIPitch(
+          lead.businessName,
+          lead.category,
+          lead.city,
+          lead.state
         );
 
-        alert(
-          "AI Pitch Generated & Copied"
-        );
-      } catch (error) {
-        alert(
-          "Failed to generate AI pitch"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+      await navigator.clipboard.writeText(
+        pitch
+      );
+
+      alert(
+        "AI Pitch Generated & Copied"
+      );
+    } catch {
+      alert(
+        "Failed to generate AI pitch"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="lead-card">
@@ -98,17 +99,19 @@ export default function LeadCard({
           onChange={(e) =>
             updateStatus(
               lead.id,
-              e.target.value
+              e.target.value as LeadStatus
             )
           }
         >
-          <option>New</option>
+          <option value="New">
+            New
+          </option>
 
-          <option>
+          <option value="Interested">
             Interested
           </option>
 
-          <option>
+          <option value="Closed">
             Closed
           </option>
         </select>
@@ -129,15 +132,20 @@ export default function LeadCard({
         <a
           href={`https://wa.me/91${lead.phone}`}
           target="_blank"
+          rel="noreferrer"
         >
           WhatsApp
         </a>
 
-        <a href={`mailto:${lead.email}`}>
+        <a
+          href={`mailto:${lead.email}`}
+        >
           Email
         </a>
 
-        <a href={`tel:${lead.phone}`}>
+        <a
+          href={`tel:${lead.phone}`}
+        >
           Call
         </a>
 
