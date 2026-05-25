@@ -4,6 +4,7 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import LeadCard from "./components/LeadCard";
 import StatsCard from "./components/StatsCard";
+import AnalyticsChart from "./charts/AnalyticsChart";
 
 import {
   states,
@@ -12,14 +13,9 @@ import {
 
 import {
   generateLeads,
-  type Lead,
 } from "./services/leadService";
 
-import { generatePitch } from "./utils/generatePitch";
-
-import AnalyticsChart from "./charts/AnalyticsChart";
-
-type LeadStatus = "New" | "Interested" | "Closed";
+import type { Lead } from "./services/leadService";
 
 export default function App() {
   const [activeTab, setActiveTab] =
@@ -31,12 +27,13 @@ export default function App() {
   const [selectedState, setSelectedState] =
     useState("All");
 
-  const [selectedCategory, setSelectedCategory] =
-    useState("All");
+  const [
+    selectedCategory,
+    setSelectedCategory,
+  ] = useState("All");
 
-  const [leads, setLeads] = useState<
-    Lead[]
-  >([]);
+  const [leads, setLeads] =
+    useState<Lead[]>([]);
 
   useEffect(() => {
     const saved =
@@ -58,40 +55,46 @@ export default function App() {
     );
   }, [leads]);
 
-  const filteredLeads = useMemo(() => {
-    return leads.filter((lead) => {
-      const matchesSearch =
-        lead.businessName
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          );
+  const filteredLeads =
+    useMemo(() => {
+      return leads.filter((lead) => {
+        const matchesSearch =
+          lead.businessName
+            .toLowerCase()
+            .includes(
+              search.toLowerCase()
+            );
 
-      const matchesState =
-        selectedState === "All" ||
-        lead.state === selectedState;
+        const matchesState =
+          selectedState === "All" ||
+          lead.state ===
+            selectedState;
 
-      const matchesCategory =
-        selectedCategory === "All" ||
-        lead.category ===
-          selectedCategory;
+        const matchesCategory =
+          selectedCategory ===
+            "All" ||
+          lead.category ===
+            selectedCategory;
 
-      return (
-        matchesSearch &&
-        matchesState &&
-        matchesCategory
-      );
-    });
-  }, [
-    leads,
-    search,
-    selectedState,
-    selectedCategory,
-  ]);
+        return (
+          matchesSearch &&
+          matchesState &&
+          matchesCategory
+        );
+      });
+    }, [
+      leads,
+      search,
+      selectedState,
+      selectedCategory,
+    ]);
 
   const updateStatus = (
     id: number,
-    status: LeadStatus
+    status:
+      | "New"
+      | "Interested"
+      | "Closed"
   ) => {
     setLeads((prev) =>
       prev.map((lead) =>
@@ -277,9 +280,7 @@ export default function App() {
           </select>
 
           <button
-            onClick={
-              exportCSV
-            }
+            onClick={exportCSV}
           >
             Export CSV
           </button>
@@ -294,6 +295,28 @@ export default function App() {
             Regenerate AI Leads
           </button>
         </div>
+
+        {(activeTab ===
+          "Finder" ||
+          activeTab ===
+            "CRM") && (
+          <div className="lead-grid">
+            {filteredLeads.map(
+              (lead) => (
+                <LeadCard
+                  key={lead.id}
+                  lead={lead}
+                  updateStatus={
+                    updateStatus
+                  }
+                  updateNotes={
+                    updateNotes
+                  }
+                />
+              )
+            )}
+          </div>
+        )}
 
         {activeTab ===
           "Dashboard" && (
@@ -325,55 +348,6 @@ export default function App() {
             <StatsCard
               title="Average AI Score"
               value={`${stats.average}%`}
-            />
-          </div>
-        )}
-
-        {(activeTab ===
-          "Finder" ||
-          activeTab ===
-            "CRM") && (
-          <div className="lead-grid">
-            {filteredLeads.map(
-              (lead) => (
-                <LeadCard
-                  key={lead.id}
-                  lead={lead}
-                  updateStatus={
-                    updateStatus
-                  }
-                  updateNotes={
-                    updateNotes
-                  }
-                  generatePitch={
-                    generatePitch
-                  }
-                />
-              )
-            )}
-          </div>
-        )}
-
-        {activeTab ===
-          "Analytics" && (
-          <div className="dashboard-grid">
-            <StatsCard
-              title="Hot Leads"
-              value={stats.hot}
-            />
-
-            <StatsCard
-              title="Interested"
-              value={
-                stats.interested
-              }
-            />
-
-            <StatsCard
-              title="Closed"
-              value={
-                stats.closed
-              }
             />
 
             <div className="card">
