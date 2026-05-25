@@ -7,29 +7,10 @@ export async function generateAIPitch(
   city: string,
   state: string
 ) {
-  const prompt = `
-Generate a short professional WhatsApp outreach message.
-
-Business Name: ${businessName}
-Category: ${category}
-City: ${city}
-State: ${state}
-
-Promote:
-- Batangarh News
-- digital marketing
-- branding
-- social media growth
-
-Keep message:
-- short
-- conversational
-- human
-`;
-
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=" +
+        API_KEY,
       {
         method: "POST",
 
@@ -41,9 +22,25 @@ Keep message:
         body: JSON.stringify({
           contents: [
             {
+              role: "user",
+
               parts: [
                 {
-                  text: prompt,
+                  text: `
+Write a short professional WhatsApp outreach message.
+
+Business: ${businessName}
+Category: ${category}
+Location: ${city}, ${state}
+
+Promote:
+- Batangarh News
+- social media marketing
+- branding
+- digital growth
+
+Keep it short and natural.
+`,
                 },
               ],
             },
@@ -57,18 +54,19 @@ Keep message:
 
     console.log(data);
 
-    if (
-      data.candidates &&
-      data.candidates.length > 0
-    ) {
-      return data.candidates[0]
-        .content.parts[0].text;
+    if (data.error) {
+      return `Error: ${data.error.message}`;
     }
 
-    return "Unable to generate AI pitch.";
-  } catch (error) {
-    console.error(error);
+    return (
+      data?.candidates?.[0]
+        ?.content?.parts?.[0]
+        ?.text ||
+      "No AI response received."
+    );
+  } catch (err) {
+    console.error(err);
 
-    return "AI request failed.";
+    return "Gemini API request failed.";
   }
 }
