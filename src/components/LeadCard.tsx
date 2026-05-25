@@ -129,13 +129,29 @@ export default function LeadCard({
       />
 
       <div className="actions">
-        <a
-          href={`https://wa.me/91${lead.phone}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          WhatsApp
-        </a>
+      <button
+  onClick={async () => {
+    const pitch =
+      await generateAIPitch(
+        lead.businessName,
+        lead.category,
+        lead.city,
+        lead.state
+      );
+
+    const whatsappUrl =
+      `https://wa.me/91${lead.phone}?text=${encodeURIComponent(
+        pitch
+      )}`;
+
+    window.open(
+      whatsappUrl,
+      "_blank"
+    );
+  }}
+>
+  WhatsApp AI
+</button>
 
         <a
           href={`mailto:${lead.email}`}
