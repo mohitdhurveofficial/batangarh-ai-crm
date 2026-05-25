@@ -23,7 +23,7 @@ export async function generateAIPitch(
   const templates = [
     `Hi ${businessName},
 
-Came across your profile while checking businesses in ${city}. Honestly felt your ${cleanCategory} business has really good potential online.
+Came across your profile while checking businesses in ${city}. Honestly felt your brand has really good potential online.
 
 We’re working with local businesses through Batangarh News to improve branding and visibility on social media.
 
@@ -39,9 +39,9 @@ No hard selling — just thought it’d be nice to connect once 🙂`,
 
     `Hi,
 
-I recently came across ${businessName} and felt your business could genuinely attract more people online with the right visibility.
+I recently came across ${businessName} and felt your ${cleanCategory} brand could genuinely attract more attention online with the right visibility.
 
-We usually help local ${cleanCategory} brands with promotions and branding through Batangarh News.
+We usually help local businesses with promotions and branding through Batangarh News.
 
 Would be happy to connect sometime if you're open to it.`,
   ];
