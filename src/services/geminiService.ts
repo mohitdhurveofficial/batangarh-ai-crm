@@ -9,7 +9,7 @@ export async function generateAIPitch(
 ) {
   try {
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
         API_KEY,
       {
         method: "POST",
@@ -29,7 +29,7 @@ export async function generateAIPitch(
                   text: `
 Write a short professional WhatsApp outreach message.
 
-Business: ${businessName}
+Business Name: ${businessName}
 Category: ${category}
 Location: ${city}, ${state}
 
@@ -39,7 +39,11 @@ Promote:
 - branding
 - digital growth
 
-Keep it short and natural.
+Keep it:
+- short
+- conversational
+- human
+- professional
 `,
                 },
               ],
@@ -52,7 +56,10 @@ Keep it short and natural.
     const data =
       await response.json();
 
-    console.log(data);
+    console.log(
+      "Gemini Response:",
+      data
+    );
 
     if (data.error) {
       return `Error: ${data.error.message}`;
@@ -62,11 +69,11 @@ Keep it short and natural.
       data?.candidates?.[0]
         ?.content?.parts?.[0]
         ?.text ||
-      "No AI response received."
+      "Unable to generate AI pitch."
     );
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
 
-    return "Gemini API request failed.";
+    return "AI request failed.";
   }
 }
