@@ -1,34 +1,25 @@
-export async function generateAIPitch(
-  businessName: string,
-  category: string,
-  city: string,
-  state: string
-) {
-  const templates = [
-    `Hi ${businessName},
+const templates = [
+  `Hi ${businessName},
 
-We help ${category.toLowerCase()} businesses in ${city} grow through social media marketing, branding and local promotions with Batangarh News.
+Hope you're doing well. Came across your business and genuinely felt you can grow much more online locally.
 
-Would love to discuss how we can help increase your customer reach.`,
+We help businesses with branding, promotions and social media growth through Batangarh News.
 
-    `Hello ${businessName},
+Would love to connect once if you're open to it.`,
 
-Batangarh News helps local businesses across ${state} with digital marketing, branding, social media growth and local audience reach.
+  `Hey ${businessName},
 
-Interested in a quick discussion for your business growth?`,
+Just saw your business profile and thought of reaching out.
 
-    `Hi ${businessName},
+We work with local businesses in ${city} to improve visibility and attract more customers through social media promotions and branding.
 
-We noticed your ${category.toLowerCase()} business in ${city} and believe it has strong online growth potential.
+Let me know if you'd like to discuss sometime.`,
 
-Batangarh News can help with promotions, branding and social media growth.
+  `Hi,
 
-Would you like to connect once?`,
-  ];
+I was checking businesses in ${city} and found ${businessName}. Honestly felt your business has strong potential online.
 
-  const randomIndex = Math.floor(
-    Math.random() * templates.length
-  );
+At Batangarh News we help businesses with local promotions, branding and digital reach.
 
-  return templates[randomIndex];
-}
+Would you be interested in a quick conversation sometime this week?`,
+];
