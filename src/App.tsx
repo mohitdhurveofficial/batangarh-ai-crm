@@ -52,55 +52,35 @@ function App() {
         : [
             {
               id: 1,
-
               businessName:
                 "Royal Traders",
-
               category: "Fashion",
-
               city: "Ahmedabad",
-
               state: "Gujarat",
-
               phone: "9876543210",
-
               email:
                 "royaltraders@gmail.com",
-
               status: "New",
-
               notes: "",
-
               aiScore: 91,
-
               temperature: "Hot",
             },
 
             {
               id: 2,
-
               businessName:
                 "Modern Mart",
-
               category:
                 "Automobile",
-
               city: "Delhi",
-
               state: "Delhi",
-
               phone: "9876543211",
-
               email:
                 "modernmart@gmail.com",
-
               status:
                 "Interested",
-
               notes: "",
-
               aiScore: 77,
-
               temperature: "Warm",
             },
           ];
@@ -118,12 +98,39 @@ function App() {
   const [newState, setNewState] =
     useState("");
 
+  const [search, setSearch] =
+    useState("");
+
+  const [filterStatus, setFilterStatus] =
+    useState("All");
+
   useEffect(() => {
     localStorage.setItem(
       "batangarh-leads",
       JSON.stringify(leads)
     );
   }, [leads]);
+
+  const filteredLeads =
+    leads.filter((lead) => {
+      const matchesSearch =
+        lead.businessName
+          .toLowerCase()
+          .includes(
+            search.toLowerCase()
+          );
+
+      const matchesStatus =
+        filterStatus === "All"
+          ? true
+          : lead.status ===
+            filterStatus;
+
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+    });
 
   function updateStatus(
     id: number,
@@ -254,19 +261,58 @@ function App() {
         </button>
       </div>
 
+      <div className="filters">
+        <input
+          placeholder="Search business..."
+          value={search}
+          onChange={(e) =>
+            setSearch(
+              e.target.value
+            )
+          }
+        />
+
+        <select
+          value={filterStatus}
+          onChange={(e) =>
+            setFilterStatus(
+              e.target.value
+            )
+          }
+        >
+          <option value="All">
+            All Leads
+          </option>
+
+          <option value="New">
+            New
+          </option>
+
+          <option value="Interested">
+            Interested
+          </option>
+
+          <option value="Closed">
+            Closed
+          </option>
+        </select>
+      </div>
+
       <div className="lead-grid">
-        {leads.map((lead) => (
-          <LeadCard
-            key={lead.id}
-            lead={lead}
-            updateStatus={
-              updateStatus
-            }
-            updateNotes={
-              updateNotes
-            }
-          />
-        ))}
+        {filteredLeads.map(
+          (lead) => (
+            <LeadCard
+              key={lead.id}
+              lead={lead}
+              updateStatus={
+                updateStatus
+              }
+              updateNotes={
+                updateNotes
+              }
+            />
+          )
+        )}
       </div>
     </div>
   );
