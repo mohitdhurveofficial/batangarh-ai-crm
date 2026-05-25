@@ -1,29 +1,35 @@
 const API_KEY =
   import.meta.env.VITE_GEMINI_API_KEY;
 
-console.log("Gemini Key:", API_KEY);
-
 export async function generateAIPitch(
   businessName: string,
   category: string,
   city: string,
   state: string
 ) {
-  if (!API_KEY) {
-    return "Gemini API key missing.";
-  }
-
   const prompt = `
-Generate a short professional outreach message.
+Generate a short professional WhatsApp outreach message.
 
-Business: ${businessName}
+Business Name: ${businessName}
 Category: ${category}
-Location: ${city}, ${state}
+City: ${city}
+State: ${state}
+
+Promote:
+- Batangarh News
+- digital marketing
+- branding
+- social media growth
+
+Keep message:
+- short
+- conversational
+- human
 `;
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
       {
         method: "POST",
 
@@ -49,10 +55,7 @@ Location: ${city}, ${state}
     const data =
       await response.json();
 
-    console.log(
-      "Gemini Full Response:",
-      data
-    );
+    console.log(data);
 
     if (
       data.candidates &&
@@ -62,10 +65,10 @@ Location: ${city}, ${state}
         .content.parts[0].text;
     }
 
-    return JSON.stringify(data);
+    return "Unable to generate AI pitch.";
   } catch (error) {
     console.error(error);
 
-    return "Gemini request failed.";
+    return "AI request failed.";
   }
 }
