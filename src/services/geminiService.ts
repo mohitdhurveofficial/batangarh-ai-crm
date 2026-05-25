@@ -1,31 +1,24 @@
 const API_KEY =
   import.meta.env.VITE_GEMINI_API_KEY;
 
+console.log("Gemini Key:", API_KEY);
+
 export async function generateAIPitch(
   businessName: string,
   category: string,
   city: string,
   state: string
 ) {
+  if (!API_KEY) {
+    return "Gemini API key missing.";
+  }
+
   const prompt = `
-Generate a short professional WhatsApp outreach message.
+Generate a short professional outreach message.
 
-Business Name: ${businessName}
+Business: ${businessName}
 Category: ${category}
-City: ${city}
-State: ${state}
-
-Promote:
-- Batangarh News
-- digital marketing
-- branding
-- social media growth
-
-Keep message:
-- short
-- conversational
-- human
-- high converting
+Location: ${city}, ${state}
 `;
 
   try {
@@ -57,7 +50,7 @@ Keep message:
       await response.json();
 
     console.log(
-      "Gemini Response:",
+      "Gemini Full Response:",
       data
     );
 
@@ -69,10 +62,10 @@ Keep message:
         .content.parts[0].text;
     }
 
-    return "Unable to generate AI pitch.";
+    return JSON.stringify(data);
   } catch (error) {
     console.error(error);
 
-    return "AI request failed.";
+    return "Gemini request failed.";
   }
 }
