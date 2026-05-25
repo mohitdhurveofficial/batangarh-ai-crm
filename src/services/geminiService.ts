@@ -9,7 +9,7 @@ export async function generateAIPitch(
 ) {
   try {
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
         API_KEY,
       {
         method: "POST",
@@ -22,8 +22,6 @@ export async function generateAIPitch(
         body: JSON.stringify({
           contents: [
             {
-              role: "user",
-
               parts: [
                 {
                   text: `
@@ -35,15 +33,11 @@ Location: ${city}, ${state}
 
 Promote:
 - Batangarh News
-- social media marketing
+- digital marketing
 - branding
-- digital growth
+- social media growth
 
-Keep it:
-- short
-- conversational
-- human
-- professional
+Keep message short, human and conversational.
 `,
                 },
               ],
@@ -56,10 +50,7 @@ Keep it:
     const data =
       await response.json();
 
-    console.log(
-      "Gemini Response:",
-      data
-    );
+    console.log(data);
 
     if (data.error) {
       return `Error: ${data.error.message}`;
@@ -69,7 +60,7 @@ Keep it:
       data?.candidates?.[0]
         ?.content?.parts?.[0]
         ?.text ||
-      "Unable to generate AI pitch."
+      "No AI response received."
     );
   } catch (error) {
     console.error(error);
