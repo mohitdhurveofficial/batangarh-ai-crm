@@ -5,7 +5,7 @@ export async function generateAIPitch(
   state: string
 ) {
   const templates = [
-    `Hi ${businessName} 👋
+    `Hi ${businessName},
 
 We help ${category.toLowerCase()} businesses in ${city} grow through social media marketing, branding and local promotions with Batangarh News.
 
@@ -13,15 +13,11 @@ Would love to discuss how we can help increase your customer reach.`,
 
     `Hello ${businessName},
 
-Batangarh News helps local businesses across ${state} with:
-• digital marketing
-• branding
-• social media growth
-• local audience reach
+Batangarh News helps local businesses across ${state} with digital marketing, branding, social media growth and local audience reach.
 
 Interested in a quick discussion for your business growth?`,
 
-    `Hi there 👋
+    `Hi ${businessName},
 
 We noticed your ${category.toLowerCase()} business in ${city} and believe it has strong online growth potential.
 
