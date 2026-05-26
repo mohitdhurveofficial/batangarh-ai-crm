@@ -240,36 +240,54 @@ function App() {
     ] as const;
 
     const formatted =
-      lines.map((line) => ({
-        businessName: line,
+      lines.map((line) => {
+        const [
+          businessName,
+          category,
+          city,
+          state,
+        ] = line.split(",");
 
-        category: "Business",
+        return {
+          businessName:
+            businessName?.trim() ||
+            "Unknown",
 
-        city: "Unknown",
+          category:
+            category?.trim() ||
+            "Business",
 
-        state: "Unknown",
+          city:
+            city?.trim() ||
+            "Unknown",
 
-        phone: "9999999999",
+          state:
+            state?.trim() ||
+            "Unknown",
 
-        email:
-          "business@email.com",
+          phone:
+            "9999999999",
 
-        status: "New",
+          email:
+            "business@email.com",
 
-        notes: "",
+          status: "New",
 
-        aiScore: Math.floor(
-          Math.random() * 100
-        ),
+          notes: "",
 
-        temperature:
-          scores[
-            Math.floor(
-              Math.random() *
-                scores.length
-            )
-          ],
-      }));
+          aiScore: Math.floor(
+            Math.random() * 100
+          ),
+
+          temperature:
+            scores[
+              Math.floor(
+                Math.random() *
+                  scores.length
+              )
+            ],
+        };
+      });
 
     await supabase
       .from("leads")
@@ -364,7 +382,7 @@ function App() {
 
       <div className="bulk-import">
         <textarea
-          placeholder="Paste business names here... one per line"
+          placeholder="Business Name, Category, City, State"
           value={bulkLeads}
           onChange={(e) =>
             setBulkLeads(
