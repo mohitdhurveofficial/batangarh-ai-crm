@@ -354,21 +354,24 @@ function App() {
       </div>
 
       <div className="lead-grid">
-        {filteredLeads.map(
-          (lead) => (
-            <LeadCard
-              key={lead.id}
-              lead={lead}
-              updateStatus={
-                updateStatus
-              }
-              updateNotes={
-                updateNotes
-              }
-            />
-          )
-        )}
-      </div>
+  {filteredLeads.map(
+    (lead) => (
+      <LeadCard
+        key={lead.id}
+        lead={lead}
+        updateStatus={
+          updateStatus
+        }
+        updateNotes={
+          updateNotes
+        }
+        deleteLead={
+          deleteLead
+        }
+      />
+    )
+  )}
+</div>
     </div>
   );
 }
