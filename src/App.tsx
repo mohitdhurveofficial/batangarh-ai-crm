@@ -5,6 +5,8 @@ import {
 
 import LeadCard from "./components/LeadCard";
 
+import { supabase } from "./supabase";
+
 import "./index.css";
 
 export type LeadStatus =
@@ -41,16 +43,7 @@ export interface Lead {
 
 function App() {
   const [leads, setLeads] =
-    useState<Lead[]>(() => {
-      const savedLeads =
-        localStorage.getItem(
-          "batangarh-leads"
-        );
-
-      return savedLeads
-        ? JSON.parse(savedLeads)
-        : [];
-    });
+    useState<Lead[]>([]);
 
   const [newBusiness, setNewBusiness] =
     useState("");
@@ -71,11 +64,22 @@ function App() {
     useState("All");
 
   useEffect(() => {
-    localStorage.setItem(
-      "batangarh-leads",
-      JSON.stringify(leads)
-    );
-  }, [leads]);
+    fetchLeads();
+  }, []);
+
+  async function fetchLeads() {
+    const { data, error } =
+      await supabase
+        .from("leads")
+        .select("*")
+        .order("id", {
+          ascending: false,
+        });
+
+    if (!error && data) {
+      setLeads(data);
+    }
+  }
 
   const filteredLeads =
     leads.filter((lead) => {
@@ -122,39 +126,31 @@ function App() {
         "Hot"
     ).length;
 
-  function updateStatus(
+  async function updateStatus(
     id: number,
     status: LeadStatus
   ) {
-    setLeads((prev) =>
-      prev.map((lead) =>
-        lead.id === id
-          ? {
-              ...lead,
-              status,
-            }
-          : lead
-      )
-    );
+    await supabase
+      .from("leads")
+      .update({ status })
+      .eq("id", id);
+
+    fetchLeads();
   }
 
-  function updateNotes(
+  async function updateNotes(
     id: number,
     notes: string
   ) {
-    setLeads((prev) =>
-      prev.map((lead) =>
-        lead.id === id
-          ? {
-              ...lead,
-              notes,
-            }
-          : lead
-      )
-    );
+    await supabase
+      .from("leads")
+      .update({ notes })
+      .eq("id", id);
+
+    fetchLeads();
   }
 
-  function addLead() {
+  async function addLead() {
     if (!newBusiness) return;
 
     const scores = [
@@ -163,45 +159,44 @@ function App() {
       "Cold",
     ] as const;
 
-    const newLead: Lead = {
-      id: Date.now(),
+    await supabase
+      .from("leads")
+      .insert([
+        {
+          businessName:
+            newBusiness,
 
-      businessName:
-        newBusiness,
+          category:
+            newCategory,
 
-      category:
-        newCategory,
+          city: newCity,
 
-      city: newCity,
+          state: newState,
 
-      state: newState,
+          phone: "9999999999",
 
-      phone: "9999999999",
+          email:
+            "business@email.com",
 
-      email:
-        "business@email.com",
+          status: "New",
 
-      status: "New",
+          notes: "",
 
-      notes: "",
+          aiScore: Math.floor(
+            Math.random() * 100
+          ),
 
-      aiScore: Math.floor(
-        Math.random() * 100
-      ),
+          temperature:
+            scores[
+              Math.floor(
+                Math.random() *
+                  scores.length
+              )
+            ],
+        },
+      ]);
 
-      temperature:
-        scores[
-          Math.floor(
-            Math.random() *
-              scores.length
-          )
-        ],
-    };
-
-    setLeads([
-      newLead,
-      ...leads,
-    ]);
+    fetchLeads();
 
     setNewBusiness("");
     setNewCategory("");
