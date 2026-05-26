@@ -162,6 +162,32 @@ function App() {
     fetchLeads();
   }
 
+  async function deleteLead(
+    id: number
+  ) {
+    const confirmDelete =
+      confirm(
+        "Delete this lead?"
+      );
+
+    if (!confirmDelete)
+      return;
+
+    const { error } =
+      await supabase
+        .from("leads")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+
+      return;
+    }
+
+    fetchLeads();
+  }
+
   async function addLead() {
     if (!newBusiness) {
       alert(
@@ -354,24 +380,24 @@ function App() {
       </div>
 
       <div className="lead-grid">
-  {filteredLeads.map(
-    (lead) => (
-      <LeadCard
-        key={lead.id}
-        lead={lead}
-        updateStatus={
-          updateStatus
-        }
-        updateNotes={
-          updateNotes
-        }
-        deleteLead={
-          deleteLead
-        }
-      />
-    )
-  )}
-</div>
+        {filteredLeads.map(
+          (lead) => (
+            <LeadCard
+              key={lead.id}
+              lead={lead}
+              updateStatus={
+                updateStatus
+              }
+              updateNotes={
+                updateNotes
+              }
+              deleteLead={
+                deleteLead
+              }
+            />
+          )
+        )}
+      </div>
     </div>
   );
 }
