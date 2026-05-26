@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import type { Lead } from "../services/leadService.ts";
+import type { Lead } from "../App";
 
-import { generateAIPitch } from "../services/geminiService.ts";
+import { generateAIPitch } from "../services/geminiService";
 
 type LeadStatus =
   | "New"
@@ -21,12 +21,17 @@ interface Props {
     id: number,
     notes: string
   ) => void;
+
+  deleteLead: (
+    id: number
+  ) => void;
 }
 
 export default function LeadCard({
   lead,
   updateStatus,
   updateNotes,
+  deleteLead,
 }: Props) {
   const [loading, setLoading] =
     useState(false);
@@ -47,12 +52,12 @@ export default function LeadCard({
         pitch
       );
 
+      alert(pitch);
+    } catch (err) {
+      console.error(err);
+
       alert(
-        "AI Pitch Generated & Copied"
-      );
-    } catch {
-      alert(
-        "Failed to generate AI pitch"
+        "AI request failed."
       );
     } finally {
       setLoading(false);
@@ -129,29 +134,29 @@ export default function LeadCard({
       />
 
       <div className="actions">
-      <button
-  onClick={async () => {
-    const pitch =
-      await generateAIPitch(
-        lead.businessName,
-        lead.category,
-        lead.city,
-        lead.state
-      );
+        <button
+          onClick={async () => {
+            const pitch =
+              await generateAIPitch(
+                lead.businessName,
+                lead.category,
+                lead.city,
+                lead.state
+              );
 
-    const whatsappUrl =
-      `https://wa.me/91${lead.phone}?text=${encodeURIComponent(
-        pitch
-      )}`;
+            const whatsappUrl =
+              `https://wa.me/91${lead.phone}?text=${encodeURIComponent(
+                pitch
+              )}`;
 
-    window.open(
-      whatsappUrl,
-      "_blank"
-    );
-  }}
->
-  WhatsApp AI
-</button>
+            window.open(
+              whatsappUrl,
+              "_blank"
+            );
+          }}
+        >
+          WhatsApp AI
+        </button>
 
         <a
           href={`mailto:${lead.email}`}
@@ -173,6 +178,17 @@ export default function LeadCard({
           {loading
             ? "Generating..."
             : "Generate AI Pitch"}
+        </button>
+
+        <button
+          onClick={() =>
+            deleteLead(lead.id)
+          }
+          style={{
+            background: "#dc2626",
+          }}
+        >
+          Delete
         </button>
       </div>
     </div>
