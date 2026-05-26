@@ -485,7 +485,34 @@ function App() {
       const rows =
         text.split("\n");
 
-      rows.shift();
+      const headers =
+        rows[0].split(",");
+
+      const nameIndex =
+        headers.findIndex(
+          (h: string) =>
+            h.includes("qBF1Pd")
+        );
+
+      const categoryIndex =
+        headers.findIndex(
+          (h: string) =>
+            h === "W4Efsd"
+        );
+
+      const addressIndex =
+        headers.findIndex(
+          (h: string) =>
+            h === "W4Efsd 4"
+        );
+
+      const linkIndex =
+        headers.findIndex(
+          (h: string) =>
+            h.includes(
+              "hfpxzc href"
+            )
+        );
 
       const scores = [
         "Hot",
@@ -495,46 +522,62 @@ function App() {
 
       const formatted =
         rows
+          .slice(1)
           .filter(
             (row: string) =>
               row.trim()
           )
           .map((row: string) => {
-            const [
-              businessName,
-              category,
-              city,
-              state,
-            ] =
+            const cols =
               row.split(",");
+
+            const businessName =
+              cols[
+                nameIndex
+              ]?.trim();
+
+            const category =
+              cols[
+                categoryIndex
+              ]?.trim();
+
+            const address =
+              cols[
+                addressIndex
+              ]?.trim();
+
+            const mapsLink =
+              cols[
+                linkIndex
+              ]?.trim();
 
             return {
               businessName:
-                businessName?.trim() ||
+                businessName ||
                 "Unknown",
 
               category:
-                category?.trim() ||
+                category ||
                 "Business",
 
               city:
-                city?.trim() ||
+                address ||
                 "Unknown",
 
               state:
-                state?.trim() ||
-                "Unknown",
+                "India",
 
               phone:
-                "9999999999",
+                "Not Available",
 
               email:
-                "business@email.com",
+                "Not Available",
 
-              status:
-                "New",
+              status: "New",
 
-              notes: "",
+              notes:
+                mapsLink ||
+                "",
 
               aiScore:
                 Math.floor(
@@ -559,7 +602,7 @@ function App() {
       fetchLeads();
 
       alert(
-        "CSV imported successfully"
+        "Real Google Maps leads imported"
       );
     };
 
