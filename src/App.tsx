@@ -57,6 +57,9 @@ function App() {
   const [newState, setNewState] =
     useState("");
 
+  const [bulkLeads, setBulkLeads] =
+    useState("");
+
   const [search, setSearch] =
     useState("");
 
@@ -224,6 +227,63 @@ function App() {
     setNewState("");
   }
 
+  async function importBulkLeads() {
+    if (!bulkLeads) return;
+
+    const lines =
+      bulkLeads.split("\n");
+
+    const scores = [
+      "Hot",
+      "Warm",
+      "Cold",
+    ] as const;
+
+    const formatted =
+      lines.map((line) => ({
+        businessName: line,
+
+        category: "Business",
+
+        city: "Unknown",
+
+        state: "Unknown",
+
+        phone: "9999999999",
+
+        email:
+          "business@email.com",
+
+        status: "New",
+
+        notes: "",
+
+        aiScore: Math.floor(
+          Math.random() * 100
+        ),
+
+        temperature:
+          scores[
+            Math.floor(
+              Math.random() *
+                scores.length
+            )
+          ],
+      }));
+
+    await supabase
+      .from("leads")
+      .insert(formatted);
+
+    fetchLeads();
+
+    setBulkLeads("");
+
+    alert(
+      "Bulk leads imported"
+    );
+  }
+
   return (
     <div className="app">
       <h1>
@@ -299,6 +359,26 @@ function App() {
           onClick={addLead}
         >
           Add Lead
+        </button>
+      </div>
+
+      <div className="bulk-import">
+        <textarea
+          placeholder="Paste business names here... one per line"
+          value={bulkLeads}
+          onChange={(e) =>
+            setBulkLeads(
+              e.target.value
+            )
+          }
+        />
+
+        <button
+          onClick={
+            importBulkLeads
+          }
+        >
+          Import Bulk Leads
         </button>
       </div>
 
