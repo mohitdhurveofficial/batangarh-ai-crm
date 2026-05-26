@@ -76,7 +76,13 @@ function App() {
           ascending: false,
         });
 
-    if (!error && data) {
+    console.log(
+      "FETCH:",
+      data,
+      error
+    );
+
+    if (data) {
       setLeads(data);
     }
   }
@@ -130,10 +136,13 @@ function App() {
     id: number,
     status: LeadStatus
   ) {
-    await supabase
-      .from("leads")
-      .update({ status })
-      .eq("id", id);
+    const { error } =
+      await supabase
+        .from("leads")
+        .update({ status })
+        .eq("id", id);
+
+    console.log(error);
 
     fetchLeads();
   }
@@ -142,16 +151,25 @@ function App() {
     id: number,
     notes: string
   ) {
-    await supabase
-      .from("leads")
-      .update({ notes })
-      .eq("id", id);
+    const { error } =
+      await supabase
+        .from("leads")
+        .update({ notes })
+        .eq("id", id);
+
+    console.log(error);
 
     fetchLeads();
   }
 
   async function addLead() {
-    if (!newBusiness) return;
+    if (!newBusiness) {
+      alert(
+        "Business name required"
+      );
+
+      return;
+    }
 
     const scores = [
       "Hot",
@@ -159,42 +177,58 @@ function App() {
       "Cold",
     ] as const;
 
-    await supabase
-      .from("leads")
-      .insert([
-        {
-          businessName:
-            newBusiness,
+    const { data, error } =
+      await supabase
+        .from("leads")
+        .insert([
+          {
+            businessName:
+              newBusiness,
 
-          category:
-            newCategory,
+            category:
+              newCategory,
 
-          city: newCity,
+            city: newCity,
 
-          state: newState,
+            state: newState,
 
-          phone: "9999999999",
+            phone: "9999999999",
 
-          email:
-            "business@email.com",
+            email:
+              "business@email.com",
 
-          status: "New",
+            status: "New",
 
-          notes: "",
+            notes: "",
 
-          aiScore: Math.floor(
-            Math.random() * 100
-          ),
+            aiScore: Math.floor(
+              Math.random() * 100
+            ),
 
-          temperature:
-            scores[
-              Math.floor(
-                Math.random() *
-                  scores.length
-              )
-            ],
-        },
-      ]);
+            temperature:
+              scores[
+                Math.floor(
+                  Math.random() *
+                    scores.length
+                )
+              ],
+          },
+        ])
+        .select();
+
+    console.log(
+      "INSERT:",
+      data,
+      error
+    );
+
+    if (error) {
+      alert(error.message);
+
+      return;
+    }
+
+    alert("Lead Added");
 
     fetchLeads();
 
