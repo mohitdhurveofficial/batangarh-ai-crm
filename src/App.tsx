@@ -366,6 +366,30 @@ function App() {
     );
   }
 
+  async function deleteDemoLeads() {
+    const confirmDelete =
+      confirm(
+        "Delete all demo leads?"
+      );
+
+    if (!confirmDelete)
+      return;
+
+    await supabase
+      .from("leads")
+      .delete()
+      .eq(
+        "notes",
+        "Auto-generated AI lead"
+      );
+
+    fetchLeads();
+
+    alert(
+      "Demo leads deleted"
+    );
+  }
+
   async function importBulkLeads() {
     if (!bulkLeads) return;
 
@@ -576,6 +600,9 @@ function App() {
         style={{
           marginBottom:
             "20px",
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
         }}
       >
         <button
@@ -597,6 +624,27 @@ function App() {
           }}
         >
           Generate AI Leads
+        </button>
+
+        <button
+          onClick={
+            deleteDemoLeads
+          }
+          style={{
+            background:
+              "#dc2626",
+            color: "white",
+            border: "none",
+            padding:
+              "14px 20px",
+            borderRadius:
+              "12px",
+            cursor: "pointer",
+            fontWeight:
+              "bold",
+          }}
+        >
+          Delete Demo Leads
         </button>
       </div>
 
