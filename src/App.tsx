@@ -3,14 +3,6 @@ import {
   useState,
 } from "react";
 
-import {
-  Auth,
-} from "@supabase/auth-ui-react";
-
-import {
-  ThemeSupa,
-} from "@supabase/auth-ui-shared";
-
 import LeadCard from "./components/LeadCard";
 
 import { supabase } from "./supabase";
@@ -50,9 +42,6 @@ export interface Lead {
 }
 
 function App() {
-  const [session, setSession] =
-    useState(null);
-
   const [leads, setLeads] =
     useState<Lead[]>([]);
 
@@ -75,31 +64,8 @@ function App() {
     useState("All");
 
   useEffect(() => {
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        setSession(
-          data.session as any
-        );
-      });
-
-    supabase.auth.onAuthStateChange(
-      (
-        _event,
-        session
-      ) => {
-        setSession(
-          session as any
-        );
-      }
-    );
+    fetchLeads();
   }, []);
-
-  useEffect(() => {
-    if (session) {
-      fetchLeads();
-    }
-  }, [session]);
 
   async function fetchLeads() {
     const { data } =
@@ -204,13 +170,8 @@ function App() {
   }
 
   async function addLead() {
-    if (!newBusiness) {
-      alert(
-        "Business name required"
-      );
-
+    if (!newBusiness)
       return;
-    }
 
     const scores = [
       "Hot",
@@ -263,77 +224,11 @@ function App() {
     setNewState("");
   }
 
-  if (!session) {
-    return (
-      <div
-        style={{
-          maxWidth:
-            "420px",
-          margin:
-            "100px auto",
-        }}
-      >
-        <h1
-          style={{
-            marginBottom:
-              "30px",
-            textAlign:
-              "center",
-          }}
-        >
-          Batangarh CRM Login
-        </h1>
-
-        <Auth
-          supabaseClient={
-            supabase
-          }
-          appearance={{
-            theme:
-              ThemeSupa,
-          }}
-          providers={[]}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="app">
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems:
-            "center",
-          marginBottom:
-            "20px",
-        }}
-      >
-        <h1>
-          Batangarh AI CRM
-        </h1>
-
-        <button
-          onClick={() =>
-            supabase.auth.signOut()
-          }
-          style={{
-            background:
-              "#dc2626",
-            color: "white",
-            border: "none",
-            padding:
-              "12px 18px",
-            borderRadius:
-              "12px",
-            cursor: "pointer",
-          }}
-        >
-          Logout
-        </button>
-      </div>
+      <h1>
+        Batangarh AI CRM
+      </h1>
 
       <div className="stats-grid">
         <div className="stat-card">
