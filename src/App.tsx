@@ -172,6 +172,27 @@ function App() {
     fetchLeads();
   }
 
+  async function deleteAllLeads() {
+    const confirmDelete =
+      confirm(
+        "Delete ALL leads?"
+      );
+
+    if (!confirmDelete)
+      return;
+
+    await supabase
+      .from("leads")
+      .delete()
+      .neq("id", 0);
+
+    fetchLeads();
+
+    alert(
+      "All leads deleted"
+    );
+  }
+
   async function addLead() {
     if (!newBusiness)
       return;
@@ -265,26 +286,12 @@ function App() {
     ];
 
     const cities = [
-      "Indore",
-      "Bhopal",
-      "Jaipur",
       "Delhi",
       "Mumbai",
       "Pune",
-      "Ahmedabad",
-      "Nagpur",
-      "Hyderabad",
       "Bangalore",
-    ];
-
-    const states = [
-      "MP",
-      "Rajasthan",
-      "Maharashtra",
-      "Delhi",
-      "Gujarat",
-      "Karnataka",
-      "Telangana",
+      "Jaipur",
+      "Indore",
     ];
 
     const scores = [
@@ -315,13 +322,7 @@ function App() {
               )
             ],
 
-          state:
-            states[
-              Math.floor(
-                Math.random() *
-                  states.length
-              )
-            ],
+          state: "India",
 
           phone:
             "9999999999",
@@ -369,7 +370,7 @@ function App() {
   async function deleteDemoLeads() {
     const confirmDelete =
       confirm(
-        "Delete all demo leads?"
+        "Delete demo leads?"
       );
 
     if (!confirmDelete)
@@ -426,13 +427,13 @@ function App() {
 
           state:
             state?.trim() ||
-            "Unknown",
+            "India",
 
           phone:
-            "9999999999",
+            "Not Available",
 
           email:
-            "business@email.com",
+            "Not Available",
 
           status: "New",
 
@@ -500,12 +501,6 @@ function App() {
             h === "W4Efsd"
         );
 
-      const addressIndex =
-        headers.findIndex(
-          (h: string) =>
-            h === "W4Efsd 4"
-        );
-
       const linkIndex =
         headers.findIndex(
           (h: string) =>
@@ -541,11 +536,6 @@ function App() {
                 categoryIndex
               ]?.trim();
 
-            const address =
-              cols[
-                addressIndex
-              ]?.trim();
-
             const mapsLink =
               cols[
                 linkIndex
@@ -558,14 +548,11 @@ function App() {
 
               category:
                 category ||
-                "Business",
+                "Restaurant",
 
-              city:
-                address ||
-                "Unknown",
+              city: "Delhi",
 
-              state:
-                "India",
+              state: "India",
 
               phone:
                 "Not Available",
@@ -602,7 +589,7 @@ function App() {
       fetchLeads();
 
       alert(
-        "Real Google Maps leads imported"
+        "Google Maps leads imported"
       );
     };
 
@@ -652,19 +639,6 @@ function App() {
           onClick={
             generateAILeads
           }
-          style={{
-            background:
-              "#9333ea",
-            color: "white",
-            border: "none",
-            padding:
-              "14px 20px",
-            borderRadius:
-              "12px",
-            cursor: "pointer",
-            fontWeight:
-              "bold",
-          }}
         >
           Generate AI Leads
         </button>
@@ -673,21 +647,20 @@ function App() {
           onClick={
             deleteDemoLeads
           }
-          style={{
-            background:
-              "#dc2626",
-            color: "white",
-            border: "none",
-            padding:
-              "14px 20px",
-            borderRadius:
-              "12px",
-            cursor: "pointer",
-            fontWeight:
-              "bold",
-          }}
         >
           Delete Demo Leads
+        </button>
+
+        <button
+          onClick={
+            deleteAllLeads
+          }
+          style={{
+            background:
+              "#7f1d1d",
+          }}
+        >
+          Delete All Leads
         </button>
       </div>
 
