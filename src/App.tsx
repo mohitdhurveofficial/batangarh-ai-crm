@@ -302,6 +302,107 @@ function App() {
     );
   }
 
+  async function handleCSVUpload(
+    event: any
+  ) {
+    const file =
+      event.target.files[0];
+
+    if (!file) return;
+
+    const reader =
+      new FileReader();
+
+    reader.onload = async (
+      e: any
+    ) => {
+      const text =
+        e.target.result;
+
+      const rows =
+        text.split("\n");
+
+      rows.shift();
+
+      const scores = [
+        "Hot",
+        "Warm",
+        "Cold",
+      ] as const;
+
+      const formatted =
+        rows
+          .filter(
+            (row: string) =>
+              row.trim()
+          )
+          .map((row: string) => {
+            const [
+              businessName,
+              category,
+              city,
+              state,
+            ] =
+              row.split(",");
+
+            return {
+              businessName:
+                businessName?.trim() ||
+                "Unknown",
+
+              category:
+                category?.trim() ||
+                "Business",
+
+              city:
+                city?.trim() ||
+                "Unknown",
+
+              state:
+                state?.trim() ||
+                "Unknown",
+
+              phone:
+                "9999999999",
+
+              email:
+                "business@email.com",
+
+              status:
+                "New",
+
+              notes: "",
+
+              aiScore:
+                Math.floor(
+                  Math.random() *
+                    100
+                ),
+
+              temperature:
+                scores[
+                  Math.floor(
+                    Math.random() *
+                      scores.length
+                  )
+                ],
+            };
+          });
+
+      await supabase
+        .from("leads")
+        .insert(formatted);
+
+      fetchLeads();
+
+      alert(
+        "CSV imported successfully"
+      );
+    };
+
+    reader.readAsText(file);
+  }
+
   return (
     <div className="app">
       <h1>
@@ -398,6 +499,21 @@ function App() {
         >
           Import Bulk Leads
         </button>
+
+        <div
+          style={{
+            marginTop:
+              "20px",
+          }}
+        >
+          <input
+            type="file"
+            accept=".csv"
+            onChange={
+              handleCSVUpload
+            }
+          />
+        </div>
       </div>
 
       <div className="filters">
