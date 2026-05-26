@@ -227,6 +227,145 @@ function App() {
     setNewState("");
   }
 
+  async function generateAILeads() {
+    const businesses = [
+      "Royal Builders",
+      "Elite Salon",
+      "Modern Jewellers",
+      "Urban Clinic",
+      "Smart Automobiles",
+      "Prime Cafe",
+      "Vision Hospital",
+      "Luxury Interiors",
+      "Growth Academy",
+      "Dynamic Fitness",
+      "Fresh Mart",
+      "Classic Furniture",
+      "Skyline Architects",
+      "Bright Dental",
+      "Digital Hub",
+      "Dream Properties",
+      "Blue Bakery",
+      "NextGen Marketing",
+      "Golden Spa",
+      "Rapid Logistics",
+    ];
+
+    const categories = [
+      "Construction",
+      "Salon",
+      "Jewellery",
+      "Healthcare",
+      "Automobile",
+      "Restaurant",
+      "Fitness",
+      "Education",
+      "Marketing",
+      "Retail",
+    ];
+
+    const cities = [
+      "Indore",
+      "Bhopal",
+      "Jaipur",
+      "Delhi",
+      "Mumbai",
+      "Pune",
+      "Ahmedabad",
+      "Nagpur",
+      "Hyderabad",
+      "Bangalore",
+    ];
+
+    const states = [
+      "MP",
+      "Rajasthan",
+      "Maharashtra",
+      "Delhi",
+      "Gujarat",
+      "Karnataka",
+      "Telangana",
+    ];
+
+    const scores = [
+      "Hot",
+      "Warm",
+      "Cold",
+    ] as const;
+
+    const generated =
+      businesses.map(
+        (business) => ({
+          businessName:
+            business,
+
+          category:
+            categories[
+              Math.floor(
+                Math.random() *
+                  categories.length
+              )
+            ],
+
+          city:
+            cities[
+              Math.floor(
+                Math.random() *
+                  cities.length
+              )
+            ],
+
+          state:
+            states[
+              Math.floor(
+                Math.random() *
+                  states.length
+              )
+            ],
+
+          phone:
+            "9999999999",
+
+          email:
+            `${business
+              .replaceAll(
+                " ",
+                ""
+              )
+              .toLowerCase()}@gmail.com`,
+
+          status: "New",
+
+          notes:
+            "Auto-generated AI lead",
+
+          aiScore:
+            Math.floor(
+              Math.random() *
+                100
+            ),
+
+          temperature:
+            scores[
+              Math.floor(
+                Math.random() *
+                  scores.length
+              )
+            ],
+        })
+      );
+
+    await supabase
+      .from("leads")
+      .insert(generated);
+
+    fetchLeads();
+
+    alert(
+      "AI leads generated"
+    );
+  }
+
   async function importBulkLeads() {
     if (!bulkLeads) return;
 
@@ -431,6 +570,34 @@ function App() {
           <h3>Hot Leads</h3>
           <p>{hotLeads}</p>
         </div>
+      </div>
+
+      <div
+        style={{
+          marginBottom:
+            "20px",
+        }}
+      >
+        <button
+          onClick={
+            generateAILeads
+          }
+          style={{
+            background:
+              "#9333ea",
+            color: "white",
+            border: "none",
+            padding:
+              "14px 20px",
+            borderRadius:
+              "12px",
+            cursor: "pointer",
+            fontWeight:
+              "bold",
+          }}
+        >
+          Generate AI Leads
+        </button>
       </div>
 
       <div className="add-lead">
