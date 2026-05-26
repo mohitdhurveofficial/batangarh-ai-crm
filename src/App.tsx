@@ -3,6 +3,14 @@ import {
   useState,
 } from "react";
 
+import {
+  Auth,
+} from "@supabase/auth-ui-react";
+
+import {
+  ThemeSupa,
+} from "@supabase/auth-ui-shared";
+
 import LeadCard from "./components/LeadCard";
 
 import { supabase } from "./supabase";
@@ -42,6 +50,9 @@ export interface Lead {
 }
 
 function App() {
+  const [session, setSession] =
+    useState<any>(null);
+
   const [leads, setLeads] =
     useState<Lead[]>([]);
 
@@ -64,23 +75,47 @@ function App() {
     useState("All");
 
   useEffect(() => {
-    fetchLeads();
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        setSession(
+          data.session
+        );
+      });
+
+    const {
+      data: authListener,
+    } =
+      supabase.auth.onAuthStateChange(
+        (
+          _event,
+          session
+        ) => {
+          setSession(
+            session
+          );
+        }
+      );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
+  useEffect(() => {
+    if (session) {
+      fetchLeads();
+    }
+  }, [session]);
+
   async function fetchLeads() {
-    const { data, error } =
+    const { data } =
       await supabase
         .from("leads")
         .select("*")
         .order("id", {
           ascending: false,
         });
-
-    console.log(
-      "FETCH:",
-      data,
-      error
-    );
 
     if (data) {
       setLeads(data);
@@ -136,13 +171,10 @@ function App() {
     id: number,
     status: LeadStatus
   ) {
-    const { error } =
-      await supabase
-        .from("leads")
-        .update({ status })
-        .eq("id", id);
-
-    console.log(error);
+    await supabase
+      .from("leads")
+      .update({ status })
+      .eq("id", id);
 
     fetchLeads();
   }
@@ -151,13 +183,10 @@ function App() {
     id: number,
     notes: string
   ) {
-    const { error } =
-      await supabase
-        .from("leads")
-        .update({ notes })
-        .eq("id", id);
-
-    console.log(error);
+    await supabase
+      .from("leads")
+      .update({ notes })
+      .eq("id", id);
 
     fetchLeads();
   }
@@ -173,17 +202,10 @@ function App() {
     if (!confirmDelete)
       return;
 
-    const { error } =
-      await supabase
-        .from("leads")
-        .delete()
-        .eq("id", id);
-
-    if (error) {
-      alert(error.message);
-
-      return;
-    }
+    await supabase
+      .from("leads")
+      .delete()
+      .eq("id", id);
 
     fetchLeads();
   }
@@ -203,58 +225,42 @@ function App() {
       "Cold",
     ] as const;
 
-    const { data, error } =
-      await supabase
-        .from("leads")
-        .insert([
-          {
-            businessName:
-              newBusiness,
+    await supabase
+      .from("leads")
+      .insert([
+        {
+          businessName:
+            newBusiness,
 
-            category:
-              newCategory,
+          category:
+            newCategory,
 
-            city: newCity,
+          city: newCity,
 
-            state: newState,
+          state: newState,
 
-            phone: "9999999999",
+          phone: "9999999999",
 
-            email:
-              "business@email.com",
+          email:
+            "business@email.com",
 
-            status: "New",
+          status: "New",
 
-            notes: "",
+          notes: "",
 
-            aiScore: Math.floor(
-              Math.random() * 100
-            ),
+          aiScore: Math.floor(
+            Math.random() * 100
+          ),
 
-            temperature:
-              scores[
-                Math.floor(
-                  Math.random() *
-                    scores.length
-                )
-              ],
-          },
-        ])
-        .select();
-
-    console.log(
-      "INSERT:",
-      data,
-      error
-    );
-
-    if (error) {
-      alert(error.message);
-
-      return;
-    }
-
-    alert("Lead Added");
+          temperature:
+            scores[
+              Math.floor(
+                Math.random() *
+                  scores.length
+              )
+            ],
+        },
+      ]);
 
     fetchLeads();
 
@@ -264,11 +270,75 @@ function App() {
     setNewState("");
   }
 
+  if (!session) {
+    return (
+      <div
+        style={{
+          maxWidth:
+            "420px",
+          margin:
+            "100px auto",
+        }}
+      >
+        <h1
+          style={{
+            marginBottom:
+              "30px",
+          }}
+        >
+          Batangarh CRM Login
+        </h1>
+
+        <Auth
+          supabaseClient={
+            supabase
+          }
+          appearance={{
+            theme:
+              ThemeSupa,
+          }}
+          providers={[]}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="app">
-      <h1>
-        Batangarh AI CRM
-      </h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          alignItems:
+            "center",
+          marginBottom:
+            "20px",
+        }}
+      >
+        <h1>
+          Batangarh AI CRM
+        </h1>
+
+        <button
+          onClick={() =>
+            supabase.auth.signOut()
+          }
+          style={{
+            background:
+              "#dc2626",
+            color: "white",
+            border: "none",
+            padding:
+              "12px 18px",
+            borderRadius:
+              "12px",
+            cursor: "pointer",
+          }}
+        >
+          Logout
+        </button>
+      </div>
 
       <div className="stats-grid">
         <div className="stat-card">
