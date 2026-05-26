@@ -1,4 +1,4 @@
-import { Lead } from "../App";
+import type { Lead } from "../App";
 
 interface Props {
   lead: Lead;
