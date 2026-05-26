@@ -51,7 +51,7 @@ export interface Lead {
 
 function App() {
   const [session, setSession] =
-    useState<any>(null);
+    useState(null);
 
   const [leads, setLeads] =
     useState<Lead[]>([]);
@@ -79,27 +79,20 @@ function App() {
       .getSession()
       .then(({ data }) => {
         setSession(
-          data.session
+          data.session as any
         );
       });
 
-    const {
-      data: authListener,
-    } =
-      supabase.auth.onAuthStateChange(
-        (
-          _event,
-          session
-        ) => {
-          setSession(
-            session
-          );
-        }
-      );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    supabase.auth.onAuthStateChange(
+      (
+        _event,
+        session
+      ) => {
+        setSession(
+          session as any
+        );
+      }
+    );
   }, []);
 
   useEffect(() => {
@@ -284,6 +277,8 @@ function App() {
           style={{
             marginBottom:
               "30px",
+            textAlign:
+              "center",
           }}
         >
           Batangarh CRM Login
