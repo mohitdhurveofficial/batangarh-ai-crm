@@ -1,20 +1,11 @@
-import { useState } from "react";
-
-import type { Lead } from "../App";
-
-import { generateAIPitch } from "../services/geminiService";
-
-type LeadStatus =
-  | "New"
-  | "Interested"
-  | "Closed";
+import { Lead } from "../App";
 
 interface Props {
   lead: Lead;
 
   updateStatus: (
     id: number,
-    status: LeadStatus
+    status: any
   ) => void;
 
   updateNotes: (
@@ -33,80 +24,95 @@ export default function LeadCard({
   updateNotes,
   deleteLead,
 }: Props) {
-  const [loading, setLoading] =
-    useState(false);
+  function getStatusColor() {
+    switch (lead.status) {
+      case "Interested":
+        return "#16a34a";
 
-  async function handleGeneratePitch() {
-    try {
-      setLoading(true);
+      case "Closed":
+        return "#2563eb";
 
-      const pitch =
-        await generateAIPitch(
-          lead.businessName,
-          lead.category,
-          lead.city,
-          lead.state
-        );
-
-      await navigator.clipboard.writeText(
-        pitch
-      );
-
-      alert(pitch);
-    } catch (err) {
-      console.error(err);
-
-      alert(
-        "AI request failed."
-      );
-    } finally {
-      setLoading(false);
+      default:
+        return "#f59e0b";
     }
   }
 
+  function getTemperatureColor() {
+    switch (
+      lead.temperature
+    ) {
+      case "Hot":
+        return "#ef4444";
+
+      case "Warm":
+        return "#f59e0b";
+
+      default:
+        return "#38bdf8";
+    }
+  }
+
+  const whatsappMessage =
+    `Hi ${lead.businessName}, we help local businesses grow visibility through Batangarh News promotions and social media branding. Would love to connect once if you're open to it.`;
+
+  const whatsappLink =
+    `https://wa.me/?text=${encodeURIComponent(
+      whatsappMessage
+    )}`;
+
   return (
     <div className="lead-card">
-      <div className="lead-top">
+      <div className="lead-header">
         <div>
-          <h2>{lead.businessName}</h2>
+          <h2>
+            {
+              lead.businessName
+            }
+          </h2>
 
-          <p>
-            {lead.city}, {lead.state}
-          </p>
-
-          <p>{lead.category}</p>
-
-          <p className="score">
-            AI Score: {lead.aiScore}
-          </p>
-
-          <p>{lead.phone}</p>
-
-          <p>{lead.email}</p>
-
-          <p
-            style={{
-              color:
-                lead.temperature === "Hot"
-                  ? "#22c55e"
-                  : lead.temperature ===
-                    "Warm"
-                  ? "#facc15"
-                  : "#ef4444",
-            }}
-          >
-            {lead.temperature} Lead
+          <p className="lead-category">
+            {lead.category}
           </p>
         </div>
+
+        <div
+          className="temperature-badge"
+          style={{
+            background:
+              getTemperatureColor(),
+          }}
+        >
+          {lead.temperature}
+        </div>
+      </div>
+
+      <div className="lead-details">
+        <p>
+          📍 {lead.city}
+        </p>
+
+        <p>
+          ⭐ AI Score:{" "}
+          {lead.aiScore}
+        </p>
+      </div>
+
+      <div className="pipeline-section">
+        <label>
+          Pipeline Stage
+        </label>
 
         <select
           value={lead.status}
           onChange={(e) =>
             updateStatus(
               lead.id,
-              e.target.value as LeadStatus
+              e.target.value
             )
           }
+          style={{
+            border: `2px solid ${getStatusColor()}`,
+          }}
         >
           <option value="New">
             New
@@ -123,7 +129,7 @@ export default function LeadCard({
       </div>
 
       <textarea
-        placeholder="Lead Notes..."
+        placeholder="Add notes, follow-ups, conversation updates..."
         value={lead.notes}
         onChange={(e) =>
           updateNotes(
@@ -134,58 +140,32 @@ export default function LeadCard({
       />
 
       <div className="actions">
-        <button
-          onClick={async () => {
-            const pitch =
-              await generateAIPitch(
-                lead.businessName,
-                lead.category,
-                lead.city,
-                lead.state
-              );
-
-            const whatsappUrl =
-              `https://wa.me/91${lead.phone}?text=${encodeURIComponent(
-                pitch
-              )}`;
-
-            window.open(
-              whatsappUrl,
-              "_blank"
-            );
-          }}
+        <a
+          href={
+            whatsappLink
+          }
+          target="_blank"
         >
-          WhatsApp AI
+          WhatsApp
+        </a>
+
+        <button>
+          Email
         </button>
 
-        <a
-          href={`mailto:${lead.email}`}
-        >
-          Email
-        </a>
-
-        <a
-          href={`tel:${lead.phone}`}
-        >
-          Call
-        </a>
-
-        <button
-          onClick={
-            handleGeneratePitch
-          }
-        >
-          {loading
-            ? "Generating..."
-            : "Generate AI Pitch"}
+        <button>
+          Follow Up
         </button>
 
         <button
           onClick={() =>
-            deleteLead(lead.id)
+            deleteLead(
+              lead.id
+            )
           }
           style={{
-            background: "#dc2626",
+            background:
+              "#dc2626",
           }}
         >
           Delete
